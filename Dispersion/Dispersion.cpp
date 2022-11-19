@@ -71,12 +71,21 @@ int main() {
     std::cout << "Finish" << std::endl;
 
     // Putting in file
+    begin = std::chrono::high_resolution_clock::now();
     PrintCSV(math_array, dispersion_array);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Putting in file just finished for: " << (float)duration.count() << " sec\n\n";
 
     // Cleaning memory
+    begin = std::chrono::high_resolution_clock::now();
     for (int count = 0; count < COLUMNS; count++) {
         delete[] input_array[count];
     }
     delete[] dispersion_array;
     delete[] math_array;
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Cleaning memory just finished for: " << (float)duration.count() << " sec\n\n";
+
 }
