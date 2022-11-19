@@ -7,22 +7,39 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
+#include <math.h>
+#include <chrono>
 
 const int STRINGS = 3000000;
 const int COLUMNS = 10;
 
-int main() {
-    std::string line;
+void PrintCSV(float math_array[], double dispersion_array[])
+{
+    std::ofstream out("output.csv");
+    out << std::setprecision(20) << "Mathematical expectation;" << "Dispersion;" << "\n\n";
 
+    for (int i = 0; i < STRINGS; i++)
+    {
+        out << math_array[i] << ";" << dispersion_array[i] << "\n";
+    }
+
+    out.close();
+}
+
+int main() {
+    // Variables
+    std::string line;
     unsigned int** input_array = new unsigned int* [STRINGS]; // strings
     for (int count = 0; count < STRINGS; count++) {
         input_array[count] = new unsigned int[COLUMNS]; // cols
     }
-    unsigned long int* dispersion_array = new unsigned long int [STRINGS]; // strings
-    unsigned int* math_array = new unsigned int[STRINGS]; // strings
+    float* math_array = new float[STRINGS]; // strings
+    double* dispersion_array = new double[STRINGS]; // strings
 
+    // File reading
     std::ifstream in("minmax.txt");
-
+    auto begin = std::chrono::high_resolution_clock::now();
     if (in.is_open()) {
         int i = 0;
         while (getline(in, line)) {
@@ -34,19 +51,32 @@ int main() {
         std::cout << "File not found" << std::endl;
     }
     in.close();
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - begin;
+    std::cout << "File reading just finished for: " << (float)duration.count() << " sec\n\n";
 
+    // Сalculation
     for (int i = 0; i < STRINGS; i++)
     {
+        unsigned long long int sum0 = 0;
+        double sum1 = 0;
         for (int j = 0; j < COLUMNS; j++)
         {
-
+            sum0 += input_array[i][j];
+            sum1 += pow(input_array[i][j], 2);
         }
+        math_array[i] = (float)(sum0 / COLUMNS);
+        dispersion_array[i] = sum1 / COLUMNS;
     }
+    std::cout << "Finish" << std::endl;
 
+    // Putting in file
+    PrintCSV(math_array, dispersion_array);
+
+    // Cleaning memory
     for (int count = 0; count < COLUMNS; count++) {
         delete[] input_array[count];
     }
     delete[] dispersion_array;
     delete[] math_array;
-    std::cout << "Finish" << std::endl;
 }
