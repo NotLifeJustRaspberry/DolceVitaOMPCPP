@@ -29,6 +29,18 @@ void PrintCSV(float math_array[], double dispersion_array[])
     out.close();
 }
 
+void PrintTimes(std::vector<float>& times)
+{
+    std::ofstream out("times.csv");
+
+    for (int i = 0; i < times.size(); i+=2)
+    {
+        out << times[i] << ";" << times[i+1] << "\n";
+    }
+
+    out.close();
+}
+
 void Read(std::vector<std::string>& lines)
 {
     std::string line;
@@ -77,6 +89,7 @@ void Calculation(unsigned int** input_array, float* math_array, double* dispersi
 int main() {
     // Variables
     std::vector<std::string> lines;
+    std::vector<float> times;
     unsigned int** input_array = new unsigned int* [STRINGS]; // strings
     for (int count = 0; count < STRINGS; count++) {
         input_array[count] = new unsigned int[COLUMNS]; // cols
@@ -102,52 +115,75 @@ int main() {
 
     // Сalculation
 #pragma region Cal
-    //begin = std::chrono::high_resolution_clock::now();
-    //Calculation(input_array, math_array, dispersion_array, 1);
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = end - begin;
-    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
-    //begin = std::chrono::high_resolution_clock::now();
-    //Calculation(input_array, math_array, dispersion_array, 2);
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = end - begin;
-    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
-    //begin = std::chrono::high_resolution_clock::now();
-    //Calculation(input_array, math_array, dispersion_array, 4);
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = end - begin;
-    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
-    //begin = std::chrono::high_resolution_clock::now();
-    //Calculation(input_array, math_array, dispersion_array, 6);
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = end - begin;
-    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
-    //begin = std::chrono::high_resolution_clock::now();
-    //Calculation(input_array, math_array, dispersion_array, 8);
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = end - begin;
-    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
-    //begin = std::chrono::high_resolution_clock::now();
-    //Calculation(input_array, math_array, dispersion_array, 10);
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = end - begin;
-    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
+    int num_threads = 1;
     begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 12);
+    Calculation(input_array, math_array, dispersion_array, num_threads);
     end = std::chrono::high_resolution_clock::now();
     duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    num_threads++;
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    
+    num_threads += 2;
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    
+    num_threads += 2;
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    num_threads += 2;
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    num_threads += 2;
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    num_threads += 2;
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
     std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 #pragma endregion
 
     // Putting in file
     begin = std::chrono::high_resolution_clock::now();
     PrintCSV(math_array, dispersion_array);
+    PrintTimes(times);
     end = std::chrono::high_resolution_clock::now();
     duration = end - begin;
     std::cout << "Putting in file just finished for: " << (float)duration.count() << " sec\n\n";
