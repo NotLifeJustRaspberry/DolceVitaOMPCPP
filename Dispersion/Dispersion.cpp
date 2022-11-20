@@ -85,8 +85,14 @@ void Calculation(unsigned int** input_array, float* math_array, double* dispersi
     }
 }
 
-void Calculation_interface(unsigned int** input_array, float* math_array, double* dispersion_array, int num_threads) {
-
+void Calculation_interface(unsigned int** input_array, float* math_array, double* dispersion_array, std::vector<float>& times, int num_threads = 1) {
+    auto begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, num_threads);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - begin;
+    times.push_back((float)num_threads);
+    times.push_back((float)duration.count());
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 }
 
 int main() {
@@ -117,71 +123,19 @@ int main() {
     std::cout << "File parsing just finished for: " << (float)duration.count() << " sec\n\n";
 
     // Сalculation
-#pragma region Cal
-
-    int num_threads = 1;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
-    num_threads++;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-    
+    Calculation_interface(input_array, math_array, dispersion_array, times);
+    int num_threads = 2;
+    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-    
+    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
+    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
+    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-
+    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, num_threads);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    times.push_back((float)num_threads);
-    times.push_back((float)duration.count());
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
-#pragma endregion
+    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
 
     // Putting in file
     begin = std::chrono::high_resolution_clock::now();
