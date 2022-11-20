@@ -11,6 +11,7 @@
 #include <math.h>
 #include <chrono>
 #include <omp.h>
+#include <vector>
 
 const int STRINGS = 3000000;
 const int COLUMNS = 10;
@@ -28,16 +29,14 @@ void PrintCSV(float math_array[], double dispersion_array[])
     out.close();
 }
 
-void ReadandParse(unsigned int **input_array)
+void Read(std::vector<std::string>& lines)
 {
     std::string line;
     std::ifstream in("minmax.txt");
 
     if (in.is_open()) {
-        int i = 0;
         while (getline(in, line)) {
-            sscanf(line.c_str(), "%d %d %d %d %d %d %d %d %d %d", &input_array[i][0], &input_array[i][1], &input_array[i][2], &input_array[i][3], &input_array[i][4], &input_array[i][5], &input_array[i][6], &input_array[i][7], &input_array[i][8], &input_array[i][9]);
-            i++;
+            lines.push_back(line);
         }
     }
     else {
@@ -45,6 +44,15 @@ void ReadandParse(unsigned int **input_array)
     }
     in.close();
 }
+
+void Parse(std::vector<std::string>& lines, unsigned int** input_array) {
+        #pragma omp parallel for num_threads(12)
+        for (int i = 0; i < STRINGS; i++)
+        {
+            sscanf(lines[i].c_str(), "%d %d %d %d %d %d %d %d %d %d", &input_array[i][0], &input_array[i][1], &input_array[i][2], &input_array[i][3], &input_array[i][4], &input_array[i][5], &input_array[i][6], &input_array[i][7], &input_array[i][8], &input_array[i][9]);
+        }
+}
+
 
 void Calculation(unsigned int** input_array, float* math_array, double* dispersion_array, int num_threads) {
     omp_set_num_threads(num_threads);
@@ -67,8 +75,8 @@ void Calculation(unsigned int** input_array, float* math_array, double* dispersi
 }
 
 int main() {
-    
     // Variables
+    std::vector<std::string> lines;
     unsigned int** input_array = new unsigned int* [STRINGS]; // strings
     for (int count = 0; count < STRINGS; count++) {
         input_array[count] = new unsigned int[COLUMNS]; // cols
@@ -76,55 +84,66 @@ int main() {
     float* math_array = new float[STRINGS]; // strings
     double* dispersion_array = new double[STRINGS]; // strings
 
+    auto total_begin = std::chrono::high_resolution_clock::now();
+
     // File reading
     auto begin = std::chrono::high_resolution_clock::now();
-    ReadandParse(input_array);
+    Read(lines);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> duration = end - begin;
     std::cout << "File reading just finished for: " << (float)duration.count() << " sec\n\n";
+   
+    // File parsing
+    begin = std::chrono::high_resolution_clock::now();
+    Parse(lines, input_array);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "File parsing just finished for: " << (float)duration.count() << " sec\n\n";
 
     // Сalculation
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 1);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+#pragma region Cal
+    //begin = std::chrono::high_resolution_clock::now();
+    //Calculation(input_array, math_array, dispersion_array, 1);
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = end - begin;
+    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 2);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    //begin = std::chrono::high_resolution_clock::now();
+    //Calculation(input_array, math_array, dispersion_array, 2);
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = end - begin;
+    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 4);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    //begin = std::chrono::high_resolution_clock::now();
+    //Calculation(input_array, math_array, dispersion_array, 4);
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = end - begin;
+    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 6);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    //begin = std::chrono::high_resolution_clock::now();
+    //Calculation(input_array, math_array, dispersion_array, 6);
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = end - begin;
+    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 8);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    //begin = std::chrono::high_resolution_clock::now();
+    //Calculation(input_array, math_array, dispersion_array, 8);
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = end - begin;
+    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
-    begin = std::chrono::high_resolution_clock::now();
-    Calculation(input_array, math_array, dispersion_array, 10);
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - begin;
-    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+    //begin = std::chrono::high_resolution_clock::now();
+    //Calculation(input_array, math_array, dispersion_array, 10);
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = end - begin;
+    //std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
     begin = std::chrono::high_resolution_clock::now();
     Calculation(input_array, math_array, dispersion_array, 12);
     end = std::chrono::high_resolution_clock::now();
     duration = end - begin;
     std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+#pragma endregion
 
     // Putting in file
     begin = std::chrono::high_resolution_clock::now();
@@ -144,4 +163,9 @@ int main() {
     duration = end - begin;
     std::cout << "Cleaning memory just finished for: " << (float)duration.count() << " sec\n\n";
 
+    // Total runtime
+    auto total_end = std::chrono::high_resolution_clock::now();
+    duration = total_end - total_begin;
+    std::cout << "Total runtime: " << (float)duration.count() << " sec\n\n";
 }
+
