@@ -65,7 +65,6 @@ void Parse(std::vector<std::string>& lines, unsigned int** input_array) {
         }
 }
 
-
 void Calculation(unsigned int** input_array, float* math_array, double* dispersion_array, int num_threads) {
     omp_set_num_threads(num_threads);
 #pragma omp parallel
@@ -84,6 +83,10 @@ void Calculation(unsigned int** input_array, float* math_array, double* dispersi
             dispersion_array[i] = sum1 / COLUMNS;
         }
     }
+}
+
+void Calculation_interface(unsigned int** input_array, float* math_array, double* dispersion_array, int num_threads) {
+
 }
 
 int main() {
