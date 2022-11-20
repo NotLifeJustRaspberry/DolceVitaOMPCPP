@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <math.h>
 #include <chrono>
+#include <omp.h>
 
 const int STRINGS = 3000000;
 const int COLUMNS = 10;
@@ -56,19 +57,27 @@ int main() {
     std::cout << "File reading just finished for: " << (float)duration.count() << " sec\n\n";
 
     // Сalculation
-    for (int i = 0; i < STRINGS; i++)
+    begin = std::chrono::high_resolution_clock::now();
+    omp_set_num_threads(12);
+#pragma omp parallel
     {
-        unsigned long long int sum0 = 0;
-        double sum1 = 0;
-        for (int j = 0; j < COLUMNS; j++)
+        #pragma omp for
+        for (int i = 0; i < STRINGS; i++)
         {
-            sum0 += input_array[i][j];
-            sum1 += pow(input_array[i][j], 2);
+            unsigned long long int sum0 = 0;
+            double sum1 = 0;
+            for (int j = 0; j < COLUMNS; j++)
+            {
+                sum0 += input_array[i][j];
+                sum1 += pow(input_array[i][j], 2);
+            }
+            math_array[i] = (float)(sum0 / COLUMNS);
+            dispersion_array[i] = sum1 / COLUMNS;
         }
-        math_array[i] = (float)(sum0 / COLUMNS);
-        dispersion_array[i] = sum1 / COLUMNS;
     }
-    std::cout << "Finish" << std::endl;
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
 
     // Putting in file
     begin = std::chrono::high_resolution_clock::now();
