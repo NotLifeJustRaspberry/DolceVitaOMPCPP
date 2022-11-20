@@ -28,40 +28,29 @@ void PrintCSV(float math_array[], double dispersion_array[])
     out.close();
 }
 
-int main() {
-    // Variables
+void ReadandParse(unsigned int **input_array)
+{
     std::string line;
-    unsigned int** input_array = new unsigned int* [STRINGS]; // strings
-    for (int count = 0; count < STRINGS; count++) {
-        input_array[count] = new unsigned int[COLUMNS]; // cols
-    }
-    float* math_array = new float[STRINGS]; // strings
-    double* dispersion_array = new double[STRINGS]; // strings
-
-    // File reading
     std::ifstream in("minmax.txt");
-    auto begin = std::chrono::high_resolution_clock::now();
+
     if (in.is_open()) {
         int i = 0;
         while (getline(in, line)) {
-           sscanf(line.c_str(), "%d %d %d %d %d %d %d %d %d %d", &input_array[i][0], &input_array[i][1], &input_array[i][2], &input_array[i][3], &input_array[i][4], &input_array[i][5], &input_array[i][6], &input_array[i][7], &input_array[i][8], &input_array[i][9]);
-           i++;
+            sscanf(line.c_str(), "%d %d %d %d %d %d %d %d %d %d", &input_array[i][0], &input_array[i][1], &input_array[i][2], &input_array[i][3], &input_array[i][4], &input_array[i][5], &input_array[i][6], &input_array[i][7], &input_array[i][8], &input_array[i][9]);
+            i++;
         }
     }
     else {
         std::cout << "File not found" << std::endl;
     }
     in.close();
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> duration = end - begin;
-    std::cout << "File reading just finished for: " << (float)duration.count() << " sec\n\n";
+}
 
-    // Сalculation
-    begin = std::chrono::high_resolution_clock::now();
-    omp_set_num_threads(12);
+void Calculation(unsigned int** input_array, float* math_array, double* dispersion_array, int num_threads) {
+    omp_set_num_threads(num_threads);
 #pragma omp parallel
     {
-        #pragma omp for
+#pragma omp for
         for (int i = 0; i < STRINGS; i++)
         {
             unsigned long long int sum0 = 0;
@@ -75,6 +64,64 @@ int main() {
             dispersion_array[i] = sum1 / COLUMNS;
         }
     }
+}
+
+int main() {
+    
+    // Variables
+    unsigned int** input_array = new unsigned int* [STRINGS]; // strings
+    for (int count = 0; count < STRINGS; count++) {
+        input_array[count] = new unsigned int[COLUMNS]; // cols
+    }
+    float* math_array = new float[STRINGS]; // strings
+    double* dispersion_array = new double[STRINGS]; // strings
+
+    // File reading
+    auto begin = std::chrono::high_resolution_clock::now();
+    ReadandParse(input_array);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - begin;
+    std::cout << "File reading just finished for: " << (float)duration.count() << " sec\n\n";
+
+    // Сalculation
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 1);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 2);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 4);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 6);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 8);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 10);
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - begin;
+    std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
+
+    begin = std::chrono::high_resolution_clock::now();
+    Calculation(input_array, math_array, dispersion_array, 12);
     end = std::chrono::high_resolution_clock::now();
     duration = end - begin;
     std::cout << "Finish at: " << (float)duration.count() << " sec\n\n";
