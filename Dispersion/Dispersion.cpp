@@ -18,7 +18,22 @@ const int COLUMNS = 10;
 
 void PrintCSV(float* math_array, long double* dispersion_array)
 {
-    std::ofstream out("output.csv");
+    FILE *f = fopen("output.csv", "w");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    fprintf(f, "Mathematical expectation;Dispersion;\n\n");
+    for (int i = 0; i < STRINGS; i++)
+    {
+        fprintf(f, "%.9g;%.25g\n", math_array[i], dispersion_array[i]);
+        out << math_array[i] << ";" << dispersion_array[i] << "\n";
+    }
+    
+    fclose(f);
+    /*std::ofstream out("output.csv");
     out << std::setprecision(25) << "Mathematical expectation;" << "Dispersion;" << "\n\n";
 
     for (int i = 0; i < STRINGS; i++)
@@ -26,7 +41,7 @@ void PrintCSV(float* math_array, long double* dispersion_array)
         out << math_array[i] << ";" << dispersion_array[i] << "\n";
     }
 
-    out.close();
+    out.close();*/
 }
 
 void PrintTimes(std::vector<float>& times)
