@@ -29,19 +29,9 @@ void PrintCSV(float* math_array, long double* dispersion_array)
     for (int i = 0; i < STRINGS; i++)
     {
         fprintf(f, "%.9g;%.25g\n", math_array[i], dispersion_array[i]);
-        out << math_array[i] << ";" << dispersion_array[i] << "\n";
     }
     
     fclose(f);
-    /*std::ofstream out("output.csv");
-    out << std::setprecision(25) << "Mathematical expectation;" << "Dispersion;" << "\n\n";
-
-    for (int i = 0; i < STRINGS; i++)
-    {
-        out << math_array[i] << ";" << dispersion_array[i] << "\n";
-    }
-
-    out.close();*/
 }
 
 void PrintTimes(std::vector<float>& times)
@@ -142,9 +132,9 @@ int main() {
     std::cout << "File parsing just finished for: " << (float)duration.count() << " sec\n\n";
 
     // Сalculation
-    Calculation_interface(input_array, math_array, dispersion_array, times);
-    int num_threads = 2;
-    Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
+    //Calculation_interface(input_array, math_array, dispersion_array, times);
+    int num_threads = 12;
+    /*Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
     Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
@@ -153,7 +143,7 @@ int main() {
     Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
     num_threads += 2;
     Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
-    num_threads += 2;
+    num_threads += 2;*/
     Calculation_interface(input_array, math_array, dispersion_array, times, num_threads);
 
     // Putting in file
