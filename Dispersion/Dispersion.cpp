@@ -16,10 +16,10 @@
 const int STRINGS = 3000000;
 const int COLUMNS = 10;
 
-void PrintCSV(float math_array[], double dispersion_array[])
+void PrintCSV(float* math_array, long double* dispersion_array)
 {
     std::ofstream out("output.csv");
-    out << std::setprecision(20) << "Mathematical expectation;" << "Dispersion;" << "\n\n";
+    out << std::setprecision(25) << "Mathematical expectation;" << "Dispersion;" << "\n\n";
 
     for (int i = 0; i < STRINGS; i++)
     {
@@ -53,6 +53,7 @@ void Read(std::vector<std::string>& lines)
     }
     else {
         std::cout << "File not found" << std::endl;
+        system("pause");
     }
     in.close();
 }
@@ -65,7 +66,7 @@ void Parse(std::vector<std::string>& lines, unsigned int** input_array) {
         }
 }
 
-void Calculation(unsigned int** input_array, float* math_array, double* dispersion_array, int num_threads) {
+void Calculation(unsigned int** input_array, float* math_array, long double* dispersion_array, int num_threads) {
     omp_set_num_threads(num_threads);
 #pragma omp parallel
     {
@@ -73,19 +74,22 @@ void Calculation(unsigned int** input_array, float* math_array, double* dispersi
         for (int i = 0; i < STRINGS; i++)
         {
             unsigned long long int sum0 = 0;
-            double sum1 = 0;
+            unsigned long long int sum1 = 0;
             for (int j = 0; j < COLUMNS; j++)
             {
                 sum0 += input_array[i][j];
-                sum1 += pow(input_array[i][j], 2);
             }
             math_array[i] = (float)(sum0 / COLUMNS);
-            dispersion_array[i] = sum1 / COLUMNS;
+            for (int k = 0; k < COLUMNS; k++)
+            {
+                sum1 += pow(input_array[i][k] - math_array[i], 2);
+            }
+            dispersion_array[i] = sum1;
         }
     }
 }
 
-void Calculation_interface(unsigned int** input_array, float* math_array, double* dispersion_array, std::vector<float>& times, int num_threads = 1) {
+void Calculation_interface(unsigned int** input_array, float* math_array, long double* dispersion_array, std::vector<float>& times, int num_threads = 1) {
     auto begin = std::chrono::high_resolution_clock::now();
     Calculation(input_array, math_array, dispersion_array, num_threads);
     auto end = std::chrono::high_resolution_clock::now();
@@ -104,7 +108,7 @@ int main() {
         input_array[count] = new unsigned int[COLUMNS]; // cols
     }
     float* math_array = new float[STRINGS]; // strings
-    double* dispersion_array = new double[STRINGS]; // strings
+    long double* dispersion_array = new long double[STRINGS]; // strings
 
     auto total_begin = std::chrono::high_resolution_clock::now();
 
